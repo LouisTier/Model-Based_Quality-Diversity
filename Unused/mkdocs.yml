@@ -1,0 +1,159 @@
+site_name: QDax docs
+site_description: QDax
+site_author: QDax Contributors
+site_url: https://qdax.readthedocs.io/
+site_dir: public
+repo_name: QDax
+repo_url: https://github.com/adaptive-intelligent-robotics/QDax
+strict: false
+
+
+theme:
+  name: readthedocs
+  language: en
+  palette:
+    # Light mode / dark mode
+    # We deliberately don't automatically use `media` to check a user's preferences. We default to light mode as
+    # (a) it looks more professional, and (b) is more obvious about the fact that it offers a dark mode (as there is a toggle).
+    - scheme: default
+      primary: white
+      accent: amber
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      primary: black
+      accent: amber
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.tracking
+    - navigation.tabs
+    - toc.integrate
+
+
+markdown_extensions:
+  - admonition
+  - abbr
+  - attr_list
+  - def_list
+  - footnotes
+  - meta
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+      emoji_index: !!python/name:materialx.emoji.twemoji
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      repo_url_shorthand: true
+      user: squidfunk
+      repo: mkdocs-material
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      base_path: ./
+  - pymdownx.pathconverter:
+      base_path: ./
+      relative_path: docs
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid-experimental
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+  - pymdownx.tabbed:
+     alternate_style: true
+
+extra_css:
+  - css/mkdocstrings.css
+
+plugins:
+- search
+- autorefs  # Cross-links to headings
+- git-revision-date
+- mknotebooks  # enable Jupyter notebooks
+- mkdocstrings:
+    custom_templates: templates
+    handlers:
+      python:
+        docstring_style: google
+        selection:
+          inherited_members: true  # Allow looking up inherited methods
+          filters:
+            - '!^test'
+            - "!^_"  # exclude all members starting with _
+            - "^__init__$"  # but always include __init__ modules and methods
+        rendering:
+          show_source: true # don't include source code (too cumbersome)
+          show_root_heading: true
+          members_order: source  # order methods according to their order of definition in the source code, not alphabetical order
+
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Overview: overview.md
+  - Caveats: caveats.md
+  - Guides:
+    - Contributing: guides/CONTRIBUTING.md
+  - Examples:
+    - MAPElites: examples/mapelites.ipynb
+    - PGAME: examples/pgame.ipynb
+    - CMA ME: examples/cmame.ipynb
+    - QDPG: examples/qdpg.ipynb
+    - OMG MEGA: examples/omgmega.ipynb
+    - CMA MEGA: examples/cmamega.ipynb
+    - MOME: examples/mome.ipynb
+    - MEES: examples/mees.ipynb
+    - DIAYN: examples/diayn.ipynb
+    - DADS: examples/dads.ipynb
+    - SMERL: examples/smerl.ipynb
+    - CMA ES: examples/cmaes.ipynb
+    - NSGA2/SPEA2: examples/nsga2_spea2.ipynb
+    - PBT: examples/sac_pbt.ipynb
+    - MAPElites PBT: examples/me_sac_pbt.ipynb
+    - Jumanji Snake: examples/jumanji_snake.ipynb
+  - API documentation:
+    - Core:
+      - Core algorithms:
+        - MAP Elites: api_documentation/core/map_elites.md
+        - PGAME: api_documentation/core/pgame.md
+        - QDPG: api_documentation/core/qdpg.md
+        - CMA ME: api_documentation/core/cmame.md
+        - OMG MEGA: api_documentation/core/omg_mega.md
+        - CMA MEGA: api_documentation/core/cma_mega.md
+        - MOME: api_documentation/core/mome.md
+        - ME ES: api_documentation/core/mees.md
+        - ME PBT: api_documentation/core/me_pbt.md
+      - Baseline algorithms:
+        - SMERL: api_documentation/core/smerl.md
+        - DIAYN: api_documentation/core/diayn.md
+        - DADS: api_documentation/core/dads.md
+        - SAC: api_documentation/core/sac.md
+        - TD3: api_documentation/core/td3.md
+        - CMAES: api_documentation/core/cmaes.md
+        - Genetic Algorithm: api_documentation/core/genetic_algorithm.md
+        - NSGA2: api_documentation/core/nsga2.md
+        - SPEA2: api_documentation/core/spea2.md
+        - PBT: api_documentation/core/pbt.md
+      - Containers: api_documentation/core/containers.md
+      - Emitters: api_documentation/core/emitters.md
+      - Neuroevolution: api_documentation/core/neuroevolution.md
+    - Environments: api_documentation/environments.md
+    - Tasks: api_documentation/tasks.md
+    - Utils: api_documentation/utils.md

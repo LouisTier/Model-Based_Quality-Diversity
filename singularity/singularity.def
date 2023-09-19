@@ -1,0 +1,231 @@
+Bootstrap: library
+From: airl_lab/default/airl_env:qdax_f57720d0
+
+%labels
+   Author m.faldor22@imperial.ac.uk
+
+%post
+   # Update
+   apt-get update -y
+   apt-get install nano -y
+   pip install --upgrade pip
+
+   # Install
+   pip install --upgrade typing-extensions==4.1.1
+   pip install --upgrade chex
+   pip install --upgrade absl-py
+   pip install git+https://github.com/adaptive-intelligent-robotics/QDax.git@develop
+   pip install -U "brax==0.1.2"
+   pip install tqdm
+   
+   # pip install "jax[cuda]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+   # Change this line if you get JAX or NVIDIA compatibility issue      
+   # pip install -U jax[cuda11_cudnn82] -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+   pip install jax==0.4.6
+   pip install jaxlib==0.4.6+cuda11.cudnn82 -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+   
+
+   # Create working directory
+   mkdir -p /git/exp/qdax/
+   cd /git/exp/
+
+   #==================================================================================
+   exit 0 #NOTFORFINAL - the lines below this "exit" will be executed only when building the final image
+   #==================================================================================
+
+   # Enter working directory
+   cd /git/exp/
+
+   #CLONEHERE
+
+%runscript
+
+   CURPATH=$(pwd)
+   echo pwd is $(pwd)
+
+   if [ ! -d ./results ]; then
+      mkdir results
+   fi
+
+   PATHNAME=$(date +%Y-%m-%d_%H_%M_%S)_$$
+   mkdir $CURPATH/results/$PATHNAME
+
+   # Enter project
+   cd /git/exp/qdax/
+
+   echo new pwd before main script is $(pwd)
+   echo here are the following files $(ls)
+
+   ### Best method to run jobs using image arguments
+   # python3 MEMB_explicit_naive_multi_wipe.py --save_dir $CURPATH/results/$PATHNAME "$@"
+   # python3 MEMBUQ_NLL_explicit_naive_multi_wipe.py --save_dir $CURPATH/results/$PATHNAME "$@"
+   # python3 MEMB_implicit_multi_wipe.py --save_dir $CURPATH/results/$PATHNAME "$@"
+   # python3 MEMBUQ_implicit_multi_wipe.py --save_dir $CURPATH/results/$PATHNAME "$@"
+   # python3 MES_arm.py --save_dir $CURPATH/results/$PATHNAME "$@"
+
+
+
+   ### Classical simulation
+   # python3 MEMB_explicit_naive.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --first_train 500 --num_epochs 250 --per_data 0.5
+   # python3 MEMB_explicit_naive.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --first_train 500 --num_epochs 5 --per_data 0.5
+   # python3 MEMB_implicit.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --first_train 1000 --num_epochs 5 --per_data 0.5
+   # python3 MEMB_implicit.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --first_train 1000 --num_epochs 5 --per_data 0.5
+
+   ### GridSearch 
+   # python3 MEMB_explicit_naive.py --save_dir $CURPATH/results/$PATHNAME --task_name arm
+   # python3 MEMB_explicit_naive.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm
+   # python3 MEMB_implicit.py --save_dir $CURPATH/results/$PATHNAME --task_name arm
+   # python3 MEMB_implicit.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm
+
+   ### GridSearch UQ
+   # python3 MEMBUQ_NLL_explicit_naive.py --save_dir $CURPATH/results/$PATHNAME --task_name arm
+   # python3 MEMBUQ_NLL_explicit_naive.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm
+   # python3 MEMBUQ_implicit.py --save_dir $CURPATH/results/$PATHNAME --task_name arm
+   # python3 MEMBUQ_implicit.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm
+
+   ### Multi predictions
+   # python3 MEMBUQ_NLL_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --sub_div 75
+   # python3 MEMBUQ_NLL_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --sub_div 30
+   # python3 MEMBUQ_NLL_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 64 --sub_div 75
+   # python3 MEMBUQ_NLL_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 64 --sub_div 30
+   # python3 MEMBUQ_NLL_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 32 32 --sub_div 75
+   # python3 MEMBUQ_NLL_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 32 32 --sub_div 30
+
+   # python3 MEMBUQ_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 16 16 16 --sub_div 1
+   # python3 MEMBUQ_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --sub_div 1
+   # python3 MEMBUQ_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 32 32 --sub_div 1
+   # python3 MEMBUQ_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 --sub_div 1
+   # python3 MEMBUQ_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 32 16 8 --sub_div 1
+   # python3 MEMBUQ_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 32 32 16 --sub_div 1
+
+   # python3 MEMB_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 16 16 16 --sub_div 1
+   # python3 MEMB_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --sub_div 1
+   # python3 MEMB_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 32 32 --sub_div 1
+   # python3 MEMB_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 --sub_div 1
+   # python3 MEMB_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 32 16 8 --sub_div 1
+   # python3 MEMB_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 32 32 16 --sub_div 1
+
+   # python3 MEMB_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --sub_div 75
+   # python3 MEMB_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --sub_div 30
+   # python3 MEMB_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 64 --sub_div 75
+   # python3 MEMB_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 64 --sub_div 30
+   # python3 MEMB_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 32 32 --sub_div 75
+   # python3 MEMB_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 32 32 --sub_div 30
+
+   ### Best Exp
+   # python3 MEMB_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --layer_dim 64 32 16 --sub_div 30 
+   # python3 MEMB_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --sub_div 30
+   # python3 MEMBUQ_NLL_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --layer_dim 64 32 16 --sub_div 30 
+   # python3 MEMBUQ_NLL_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --sub_div 30
+
+   ### Imp Subdiv
+   # python3 MEMB_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 32 16 8 --sub_div 5
+   # python3 MEMB_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 32 16 8 --sub_div 10
+   # python3 MEMB_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 32 16 8 --sub_div 20
+   # python3 MEMB_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 32 16 8 --sub_div 30
+
+   # python3 MEMBUQ_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 16 16 16 --sub_div 5
+   # python3 MEMBUQ_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 16 16 16 --sub_div 10
+   # python3 MEMBUQ_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 16 16 16 --sub_div 20
+   # python3 MEMBUQ_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 16 16 16 --sub_div 30
+
+   ### Learning rate
+   # python3 MEMB_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --sub_div 30 --learning_rate 0.0001
+   # python3 MEMB_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --sub_div 30 --learning_rate 0.0005
+   # python3 MEMB_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --sub_div 30 --learning_rate 0.0007
+   # python3 MEMB_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --sub_div 30 --learning_rate 0.001
+   # python3 MEMB_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --sub_div 30 --learning_rate 0.005
+   # python3 MEMB_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --sub_div 30 --learning_rate 0.01
+
+   # python3 MEMBUQ_NLL_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --sub_div 30 --learning_rate 0.0001
+   # python3 MEMBUQ_NLL_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --sub_div 30 --learning_rate 0.0005
+   # python3 MEMBUQ_NLL_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --sub_div 30 --learning_rate 0.0007
+   # python3 MEMBUQ_NLL_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --sub_div 30 --learning_rate 0.001
+   # python3 MEMBUQ_NLL_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --sub_div 30 --learning_rate 0.005
+   # python3 MEMBUQ_NLL_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --sub_div 30 --learning_rate 0.01
+
+   # python3 MEMB_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 32 16 8 --sub_div 1 --learning_rate 0.0001
+   # python3 MEMB_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 32 16 8 --sub_div 1 --learning_rate 0.0005
+   # python3 MEMB_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 32 16 8 --sub_div 1 --learning_rate 0.0007
+   # python3 MEMB_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 32 16 8 --sub_div 1 --learning_rate 0.001
+   # python3 MEMB_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 32 16 8 --sub_div 1 --learning_rate 0.005
+
+   # python3 MEMBUQ_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 16 16 16 --sub_div 1 --learning_rate 0.0001
+   # python3 MEMBUQ_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 16 16 16 --sub_div 1 --learning_rate 0.0005
+   # python3 MEMBUQ_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 16 16 16 --sub_div 1 --learning_rate 0.0007
+   # python3 MEMBUQ_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 16 16 16 --sub_div 1 --learning_rate 0.001
+   # python3 MEMBUQ_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 16 16 16 --sub_div 1 --learning_rate 0.005
+
+   ### Replications
+   # python3 ME_arm.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --seed 42 
+   # python3 ME_arm.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --seed 42
+   # python3 ME_arm.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --seed 500 
+   # python3 ME_arm.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --seed 500
+   # python3 ME_arm.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --seed 843 
+   # python3 ME_arm.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --seed 843
+   # python3 ME_arm.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --seed 1452 
+   # python3 ME_arm.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --seed 1452
+   # python3 ME_arm.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --seed 4000 
+   # python3 ME_arm.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --seed 4000
+
+   # python3 MES_arm.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --seed 42 
+   # python3 MES_arm.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --seed 42
+   # python3 MES_arm.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --seed 500 
+   # python3 MES_arm.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --seed 500
+   # python3 MES_arm.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --seed 843 
+   # python3 MES_arm.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --seed 843
+   # python3 MES_arm.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --seed 1452 
+   # python3 MES_arm.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --seed 1452
+   # python3 MES_arm.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --seed 4000 
+   # python3 MES_arm.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --seed 4000
+
+   ### GridS UQ Exp
+   # python3 MEMBUQ_NLL_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16
+
+   ### Replications MBME
+   # python3 MEMB_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --layer_dim 32 16 8 --seed 42
+   # python3 MEMB_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 32 16 8 --seed 42
+   # python3 MEMB_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --layer_dim 32 16 8 --seed 500
+   # python3 MEMB_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 32 16 8 --seed 500
+   # python3 MEMB_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --layer_dim 32 16 8 --seed 843
+   # python3 MEMB_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 32 16 8 --seed 843
+   # python3 MEMB_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --layer_dim 32 16 8 --seed 1452
+   # python3 MEMB_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 32 16 8 --seed 1452
+   # python3 MEMB_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --layer_dim 32 16 8 --seed 4000
+   # python3 MEMB_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 32 16 8 --seed 4000
+
+   # python3 MEMBUQ_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --layer_dim 16 16 16 --seed 42
+   # python3 MEMBUQ_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 16 16 16 --seed 42
+   # python3 MEMBUQ_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --layer_dim 16 16 16 --seed 500
+   # python3 MEMBUQ_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 16 16 16 --seed 500
+   # python3 MEMBUQ_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --layer_dim 16 16 16 --seed 843
+   # python3 MEMBUQ_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 16 16 16 --seed 843
+   # python3 MEMBUQ_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --layer_dim 16 16 16 --seed 1452
+   # python3 MEMBUQ_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 16 16 16 --seed 1452
+   # python3 MEMBUQ_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --layer_dim 16 16 16 --seed 4000
+   # python3 MEMBUQ_implicit_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 16 16 16 --seed 4000
+
+   # python3 MEMB_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --layer_dim 64 32 16 --seed 42
+   # python3 MEMB_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --seed 42
+   # python3 MEMB_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --layer_dim 64 32 16 --seed 500
+   # python3 MEMB_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --seed 500
+   # python3 MEMB_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --layer_dim 64 32 16 --seed 843
+   # python3 MEMB_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --seed 843
+   # python3 MEMB_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --layer_dim 64 32 16 --seed 1452
+   # python3 MEMB_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --seed 1452
+   # python3 MEMB_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --layer_dim 64 32 16 --seed 4000
+   # python3 MEMB_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --seed 4000
+
+   # python3 MEMBUQ_NLL_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --layer_dim 64 32 16 --seed 42
+   # python3 MEMBUQ_NLL_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --seed 42
+   # python3 MEMBUQ_NLL_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --layer_dim 64 32 16 --seed 500
+   # python3 MEMBUQ_NLL_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --seed 500
+   # python3 MEMBUQ_NLL_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --layer_dim 64 32 16 --seed 843
+   # python3 MEMBUQ_NLL_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --seed 843
+   # python3 MEMBUQ_NLL_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --layer_dim 64 32 16 --seed 1452
+   # python3 MEMBUQ_NLL_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --seed 1452
+   # python3 MEMBUQ_NLL_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name arm --layer_dim 64 32 16 --seed 4000
+   # python3 MEMBUQ_NLL_explicit_naive_multi.py --save_dir $CURPATH/results/$PATHNAME --task_name noisy_arm --layer_dim 64 32 16 --seed 4000
+
+%help
+   MAP-Elites example using QDax.
